@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-config
+data:
+  NODE_ENV: production
+  RAILS_ENV: production
+  REDIS_HOST: {{ .Values.redisHost | quote }}
+  REDIS_PORT: {{ .Values.redisPort | quote }}
+  LOCAL_DOMAIN: {{ .Values.localDomain | quote }}
+  SMTP_SERVER: {{ .Values.smtpServer | quote }}
+  SMTP_PORT: {{ .Values.smtpPort | quote }}
+  SMTP_LOGIN: {{ .Values.smtpLogin | quote }}
+  SMTP_FROM_ADDRESS: {{ .Values.smtpFromAddress | quote }}
+  CDN_HOST: {{ .Values.cdnHost | quote }}
+  S3_ALIAS_HOST: {{ .Values.s3AliasHost | quote }}
+  S3_ENABLED: {{ .Values.s3Enabled | quote }}
+  S3_BUCKET: {{ .Values.s3Bucket | quote }}
+  S3_ENDPOINT: {{ .Values.s3Endpoint | quote }}
+  STREAMING_CLUSTER_NUM: "1"

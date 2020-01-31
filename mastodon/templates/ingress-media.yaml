@@ -1,0 +1,29 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: media
+  labels:
+    app: media
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version| replace "+" "_" }}"
+    release: {{ .Release.Name }}
+  annotations:
+    kubernetes.io/tls-acme: "true"
+    kubernetes.io/ingress.class: "nginx"
+    nginx.ingress.kubernetes.io/upstream-vhost: {{ .Values.service.media.externalName | quote }}
+    nginx.ingress.kubernetes.io/backend-protocol: "https"
+    nginx.ingress.kubernetes.io/server-snippet: |
+      proxy_ssl_name {{ .Values.service.media.externalName }};
+      proxy_ssl_server_name on;
+spec:
+  tls:
+  - hosts:
+    - {{ .Values.ingress.media.commonName | quote }}
+    secretName: {{ .Release.Name }}-{{ .Values.ingress.media.commonName | replace "." "-" }}-tls
+  rules:
+  - host: {{ .Values.ingress.media.commonName | quote }}
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: media
+          servicePort: 443

@@ -1,0 +1,23 @@
+{{- if .Values.service.streaming.enabled -}}
+apiVersion: v1
+kind: Service
+metadata:
+  name: streaming
+{{- if .Values.service.streaming.annotations }}
+  annotations:
+{{ toYaml .Values.service.streaming.annotations | indent 4 }}
+{{- end }}
+  labels:
+    app: streaming
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
+    release: {{ .Release.Name }}
+spec:
+  type: {{ .Values.service.streaming.type }}
+  ports:
+  - port: {{ .Values.service.streaming.externalPort }}
+    targetPort: {{ .Values.service.streaming.internalPort }}
+    protocol: TCP
+    name: streaming
+  selector:
+    app: streaming
+{{- end -}}

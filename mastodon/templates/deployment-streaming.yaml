@@ -1,0 +1,57 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: streaming
+  annotations:
+    linkerd.io/inject: enabled
+  labels:
+    app: streaming
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
+    release: {{ .Release.Name }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  template:
+    metadata:
+      annotations:
+        linkerd.io/inject: enabled
+      labels:
+        app: streaming
+        release: {{ .Release.Name }}
+    spec:
+      containers:
+      - name: streaming
+        image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        command:
+            - node
+            - ./streaming
+        envFrom:
+        - configMapRef:
+            name: {{ .Release.Name }}-config
+        {{- if .Values.application.secretName }}
+        - secretRef:
+            name: {{ .Values.application.secretName }}
+        {{- end }}
+        env:
+        - name: REDIS_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Release.Name }}-redis
+              key: redis-password
+        ports:
+        - name: streaming
+          containerPort: {{ .Values.service.streaming.internalPort }}
+        livenessProbe:
+          httpGet:
+            path: /api/v1/streaming/health
+            port: {{ .Values.service.streaming.internalPort }}
+            scheme: HTTP
+          initialDelaySeconds: {{ .Values.livenessProbe.initialDelaySeconds }}
+          timeoutSeconds: {{ .Values.livenessProbe.timeoutSeconds }}
+        readinessProbe:
+          httpGet:
+            path: /api/v1/streaming/health
+            port: {{ .Values.service.streaming.internalPort }}
+            scheme: HTTP
+          initialDelaySeconds: {{ .Values.readinessProbe.initialDelaySeconds }}
+          timeoutSeconds: {{ .Values.readinessProbe.timeoutSeconds }}

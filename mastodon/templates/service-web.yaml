@@ -1,0 +1,23 @@
+{{- if .Values.service.web.enabled -}}
+apiVersion: v1
+kind: Service
+metadata:
+  name: web
+{{- if .Values.service.web.annotations }}
+  annotations:
+{{ toYaml .Values.service.web.annotations | indent 4 }}
+{{- end }}
+  labels:
+    app: web
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
+    release: {{ .Release.Name }}
+spec:
+  type: {{ .Values.service.web.type }}
+  ports:
+  - port: {{ .Values.service.web.externalPort }}
+    targetPort: {{ .Values.service.web.internalPort }}
+    protocol: TCP
+    name: web
+  selector:
+    app: web
+{{- end -}}

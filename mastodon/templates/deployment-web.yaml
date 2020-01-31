@@ -1,0 +1,78 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: web
+  annotations:
+    linkerd.io/inject: enabled
+  labels:
+    app: web
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
+    release: {{ .Release.Name }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  template:
+    metadata:
+      annotations:
+        linkerd.io/inject: enabled
+      labels:
+        app: web
+        release: {{ .Release.Name }}
+    spec:
+      initContainers:
+      - name: web-init
+        image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+        command:
+{{ splitList " " .Values.application.web.initializeCommand | toYaml | indent 10 }}
+        envFrom:
+        - configMapRef:
+            name: {{ .Release.Name }}-config
+        {{- if .Values.application.secretName }}
+        - secretRef:
+            name: {{ .Values.application.secretName }}
+        {{- end }}
+        env:
+        - name: REDIS_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Release.Name }}-redis
+              key: redis-password
+      containers:
+      - name: web
+        image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        command:
+            - bundle
+            - exec
+            - puma
+            - -C
+            - config/puma.rb
+        envFrom:
+        - configMapRef:
+            name: {{ .Release.Name }}-config
+        {{- if .Values.application.secretName }}
+        - secretRef:
+            name: {{ .Values.application.secretName }}
+        {{- end }}
+        env:
+        - name: REDIS_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Release.Name }}-redis
+              key: redis-password
+        ports:
+        - name: web
+          containerPort: {{ .Values.service.web.internalPort }}
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: {{ .Values.service.web.internalPort }}
+            scheme: HTTP
+          initialDelaySeconds: {{ .Values.livenessProbe.initialDelaySeconds }}
+          timeoutSeconds: {{ .Values.livenessProbe.timeoutSeconds }}
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: {{ .Values.service.web.internalPort }}
+            scheme: HTTP
+          initialDelaySeconds: {{ .Values.readinessProbe.initialDelaySeconds }}
+          timeoutSeconds: {{ .Values.readinessProbe.timeoutSeconds }}

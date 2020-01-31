@@ -1,0 +1,34 @@
+{{- if .Values.ingress.enabled -}}
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: mastodon
+  labels:
+    app: mastodon
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version| replace "+" "_" }}"
+    release: {{ .Release.Name }}
+{{- if .Values.ingress.annotations }}
+  annotations:
+{{ toYaml .Values.ingress.annotations | indent 4 }}
+{{- end }}
+spec:
+{{- if .Values.ingress.tls.enabled }}
+  tls:
+  - hosts:
+    - {{ .Values.ingress.web.commonName | quote }}
+    secretName: {{ .Values.ingress.tls.secretName | default (include "tlsSecretName" .) }}
+{{- end }}
+  rules:
+  - host: {{ .Values.ingress.web.commonName | quote }}
+    http:
+      &httpRule
+      paths:
+      - path: /api/v1/streaming
+        backend:
+          serviceName: streaming
+          servicePort: {{ .Values.service.streaming.externalPort }}
+      - path: /
+        backend:
+          serviceName: web
+          servicePort: {{ .Values.service.web.externalPort }}
+{{- end -}}

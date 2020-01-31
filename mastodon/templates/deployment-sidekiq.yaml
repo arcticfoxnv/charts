@@ -1,0 +1,42 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: sidekiq
+  annotations:
+    linkerd.io/inject: enabled
+  labels:
+    app: sidekiq
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
+    release: {{ .Release.Name }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  template:
+    metadata:
+      annotations:
+        linkerd.io/inject: enabled
+        config.linkerd.io/skip-outbound-ports: "587"
+      labels:
+        app: sidekiq
+        release: {{ .Release.Name }}
+    spec:
+      containers:
+      - name: sidekiq
+        image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        command:
+            - bundle
+            - exec
+            - sidekiq
+        envFrom:
+        - configMapRef:
+            name: {{ .Release.Name }}-config
+        {{- if .Values.application.secretName }}
+        - secretRef:
+            name: {{ .Values.application.secretName }}
+        {{- end }}
+        env:
+        - name: REDIS_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Release.Name }}-redis
+              key: redis-password

@@ -1,0 +1,13 @@
+{{- if .Values.service.media.enabled -}}
+apiVersion: v1
+kind: Service
+metadata:
+  name: media
+  labels:
+    app: media
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
+    release: {{ .Release.Name }}
+spec:
+  type: {{ .Values.service.media.type }}
+  externalName: {{ .Values.service.media.externalName }}
+{{- end -}}
