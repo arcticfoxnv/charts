@@ -38,5 +38,5 @@ spec:
         - name: REDIS_PASSWORD
           valueFrom:
             secretKeyRef:
-              name: {{ .Release.Name }}-{{ .Chart.Name }}-redis
+              name: {{ .Release.Name }}-redis
               key: redis-password
