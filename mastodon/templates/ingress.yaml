@@ -16,7 +16,7 @@ spec:
   tls:
   - hosts:
     - {{ .Values.ingress.web.commonName | quote }}
-    secretName: {{ .Values.ingress.tls.secretName | default (include "tlsSecretName" .) }}
+      secretName: {{ .Values.ingress.tls.secretName | default (include "tlsSecretName" .) }}
 {{- end }}
   rules:
   - host: {{ .Values.ingress.web.commonName | quote }}
