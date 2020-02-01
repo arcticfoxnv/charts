@@ -18,7 +18,7 @@ spec:
   tls:
   - hosts:
     - {{ .Values.ingress.media.commonName | quote }}
-      secretName: {{ .Release.Name }}-{{ .Values.ingress.media.commonName | replace "." "-" }}-tls
+    secretName: {{ .Release.Name }}-{{ .Values.ingress.media.commonName | replace "." "-" }}-tls
   rules:
   - host: {{ .Values.ingress.media.commonName | quote }}
     http:
