@@ -2,7 +2,7 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: streaming
+  name: {{ .Release.Name }}-{{ .Chart.Name }}-streaming
 {{- if .Values.service.streaming.annotations }}
   annotations:
 {{ toYaml .Values.service.streaming.annotations | indent 4 }}
@@ -17,7 +17,7 @@ spec:
   - port: {{ .Values.service.streaming.externalPort }}
     targetPort: {{ .Values.service.streaming.internalPort }}
     protocol: TCP
-    name: streaming
+    name: {{ .Release.Name }}-{{ .Chart.Name }}-streaming
   selector:
     app: streaming
 {{- end -}}

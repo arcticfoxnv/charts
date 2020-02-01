@@ -2,7 +2,7 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: web
+  name: {{ .Release.Name }}-{{ .Chart.Name }}-web
 {{- if .Values.service.web.annotations }}
   annotations:
 {{ toYaml .Values.service.web.annotations | indent 4 }}
@@ -17,7 +17,7 @@ spec:
   - port: {{ .Values.service.web.externalPort }}
     targetPort: {{ .Values.service.web.internalPort }}
     protocol: TCP
-    name: web
+    name: {{ .Release.Name }}-{{ .Chart.Name }}-web
   selector:
     app: web
 {{- end -}}
