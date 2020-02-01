@@ -1,7 +1,7 @@
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
-  name: web
+  name: {{ .Release.Name }}-{{ .Chart.Name }}-web
   annotations:
     linkerd.io/inject: enabled
   labels:
@@ -19,7 +19,7 @@ spec:
         release: {{ .Release.Name }}
     spec:
       initContainers:
-      - name: web-init
+      - name: {{ .Release.Name }}-{{ .Chart.Name }}-web-init
         image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
         command:
 {{ splitList " " .Values.application.web.initializeCommand | toYaml | indent 10 }}
@@ -34,10 +34,10 @@ spec:
         - name: REDIS_PASSWORD
           valueFrom:
             secretKeyRef:
-              name: {{ .Release.Name }}-redis
+              name: {{ .Release.Name }}-{{ .Chart.Name }}-redis
               key: redis-password
       containers:
-      - name: web
+      - name: {{ .Release.Name }}-{{ .Chart.Name }}-web
         image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         command:
@@ -48,7 +48,7 @@ spec:
             - config/puma.rb
         envFrom:
         - configMapRef:
-            name: {{ .Release.Name }}-config
+            name: {{ .Release.Name }}-{{ .Chart.Name }}-config
         {{- if .Values.application.secretName }}
         - secretRef:
             name: {{ .Values.application.secretName }}
@@ -57,7 +57,7 @@ spec:
         - name: REDIS_PASSWORD
           valueFrom:
             secretKeyRef:
-              name: {{ .Release.Name }}-redis
+              name: {{ .Release.Name }}-{{ .Chart.Name }}-redis
               key: redis-password
         ports:
         - name: web

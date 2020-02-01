@@ -1,7 +1,7 @@
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
-  name: sidekiq
+  name: {{ .Release.Name }}-{{ .Chart.Name }}-sidekiq
   annotations:
     linkerd.io/inject: enabled
   labels:
@@ -20,7 +20,7 @@ spec:
         release: {{ .Release.Name }}
     spec:
       containers:
-      - name: sidekiq
+      - name: {{ .Release.Name }}-{{ .Chart.Name }}-sidekiq
         image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         command:
@@ -38,5 +38,5 @@ spec:
         - name: REDIS_PASSWORD
           valueFrom:
             secretKeyRef:
-              name: {{ .Release.Name }}-redis
+              name: {{ .Release.Name }}-{{ .Chart.Name }}-redis
               key: redis-password
