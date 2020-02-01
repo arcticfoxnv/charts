@@ -1,7 +1,7 @@
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
-  name: media
+  name: {{ .Release.Name }}-{{ .Chart.Name }}-media
   labels:
     app: media
     chart: "{{ .Chart.Name }}-{{ .Chart.Version| replace "+" "_" }}"
@@ -25,5 +25,5 @@ spec:
       paths:
       - path: /
         backend:
-          serviceName: media
+          serviceName: {{ .Release.Name }}-{{ .Chart.Name }}-media
           servicePort: 443

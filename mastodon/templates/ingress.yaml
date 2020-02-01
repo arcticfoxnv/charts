@@ -2,7 +2,7 @@
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
-  name: mastodon
+  name: {{ .Release.Name }}-{{ .Chart.Name }}-mastodon
   labels:
     app: mastodon
     chart: "{{ .Chart.Name }}-{{ .Chart.Version| replace "+" "_" }}"
@@ -25,10 +25,10 @@ spec:
       paths:
       - path: /api/v1/streaming
         backend:
-          serviceName: streaming
+          serviceName: {{ .Release.Name }}-{{ .Chart.Name }}-streaming
           servicePort: {{ .Values.service.streaming.externalPort }}
       - path: /
         backend:
-          serviceName: web
+          serviceName: {{ .Release.Name }}-{{ .Chart.Name }}-web
           servicePort: {{ .Values.service.web.externalPort }}
 {{- end -}}
