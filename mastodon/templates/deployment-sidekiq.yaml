@@ -29,7 +29,7 @@ spec:
             - sidekiq
         envFrom:
         - configMapRef:
-            name: {{ .Release.Name }}-config
+            name: {{ .Release.Name }}-{{ .Chart.Name }}-config
         {{- if .Values.application.secretName }}
         - secretRef:
             name: {{ .Values.application.secretName }}

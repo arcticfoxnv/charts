@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ .Release.Name }}-config
+  name: {{ .Release.Name }}-{{ .Chart.Name }}-config
 data:
   NODE_ENV: production
   RAILS_ENV: production
