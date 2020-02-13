@@ -14,13 +14,15 @@ spec:
     metadata:
       annotations:
         linkerd.io/inject: enabled
+        checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+        checksum/secret: {{ include (print $.Template.BasePath "/secret.yaml") . | sha256sum }}
       labels:
         app: web
         release: {{ .Release.Name }}
     spec:
       initContainers:
       - name: {{ .Release.Name }}-{{ .Chart.Name }}-web-init
-        image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+        image: "{{ .Values.image.repository }}:{{ .Chart.AppVersion }}"
         command:
 {{ splitList " " .Values.application.web.initializeCommand | toYaml | indent 10 }}
         envFrom:
@@ -38,7 +40,7 @@ spec:
               key: redis-password
       containers:
       - name: {{ .Release.Name }}-{{ .Chart.Name }}-web
-        image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+        image: "{{ .Values.image.repository }}:{{ .Chart.AppVersion }}"
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         command:
             - bundle

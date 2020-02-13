@@ -14,13 +14,15 @@ spec:
     metadata:
       annotations:
         linkerd.io/inject: enabled
+        checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+        checksum/secret: {{ include (print $.Template.BasePath "/secret.yaml") . | sha256sum }}
       labels:
         app: streaming
         release: {{ .Release.Name }}
     spec:
       containers:
       - name: {{ .Release.Name }}-{{ .Chart.Name }}-streaming
-        image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+        image: "{{ .Values.image.repository }}:{{ .Chart.AppVersion }}"
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         command:
             - node
