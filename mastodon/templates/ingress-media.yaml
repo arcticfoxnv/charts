@@ -15,6 +15,9 @@ metadata:
     nginx.ingress.kubernetes.io/server-snippet: |
       proxy_ssl_name {{ .Values.service.media.externalName }};
       proxy_ssl_server_name on;
+{{- if .Values.ingress.web.commonName }}
+      add_header 'Access-Control-Allow-Origin'  '{{ .Values.ingress.web.commonName }}';
+{{- end }}
 spec:
   tls:
   - hosts:
