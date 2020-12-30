@@ -5,11 +5,17 @@ metadata:
   annotations:
     linkerd.io/inject: enabled
   labels:
-    app: streaming
+    app: mastodon
+    component: streaming
     chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
     release: {{ .Release.Name }}
 spec:
   replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: mastodon
+      component: streaming
+      release: {{ .Release.Name }}
   template:
     metadata:
       annotations:
@@ -17,7 +23,8 @@ spec:
         checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
         checksum/secret: {{ include (print $.Template.BasePath "/secret.yaml") . | sha256sum }}
       labels:
-        app: streaming
+        app: mastodon
+        component: streaming
         release: {{ .Release.Name }}
     spec:
       containers:

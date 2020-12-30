@@ -1,9 +1,10 @@
-apiVersion: extensions/v1beta1
+apiVersion: networking.k8s.io/v1beta1
 kind: Ingress
 metadata:
   name: {{ .Release.Name }}-{{ .Chart.Name }}-media
   labels:
-    app: media
+    app: mastodon
+    component: media
     chart: "{{ .Chart.Name }}-{{ .Chart.Version| replace "+" "_" }}"
     release: {{ .Release.Name }}
   annotations:

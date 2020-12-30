@@ -8,7 +8,8 @@ metadata:
 {{ toYaml .Values.service.web.annotations | indent 4 }}
 {{- end }}
   labels:
-    app: web
+    app: mastodon
+    component: web
     chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
     release: {{ .Release.Name }}
 spec:
@@ -19,5 +20,7 @@ spec:
     protocol: TCP
     name: {{ .Release.Name }}-{{ .Chart.Name }}-web
   selector:
-    app: web
+    app: mastodon
+    component: web
+    release: {{ .Release.Name }}
 {{- end -}}

@@ -5,11 +5,17 @@ metadata:
   annotations:
     linkerd.io/inject: enabled
   labels:
-    app: sidekiq
+    app: mastodon
+    component: sidekiq
     chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
     release: {{ .Release.Name }}
 spec:
   replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: mastodon
+      component: sidekiq
+      release: {{ .Release.Name }}
   template:
     metadata:
       annotations:
@@ -18,7 +24,8 @@ spec:
         checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
         checksum/secret: {{ include (print $.Template.BasePath "/secret.yaml") . | sha256sum }}
       labels:
-        app: sidekiq
+        app: mastodon
+        component: sidekiq
         release: {{ .Release.Name }}
     spec:
       containers:

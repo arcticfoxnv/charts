@@ -8,7 +8,8 @@ metadata:
 {{ toYaml .Values.service.streaming.annotations | indent 4 }}
 {{- end }}
   labels:
-    app: streaming
+    app: mastodon
+    component: streaming
     chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
     release: {{ .Release.Name }}
 spec:
@@ -19,5 +20,7 @@ spec:
     protocol: TCP
     name: {{ .Release.Name }}-{{ .Chart.Name }}-streaming
   selector:
-    app: streaming
+    app: mastodon
+    component: streaming
+    release: {{ .Release.Name }}
 {{- end -}}

@@ -4,7 +4,8 @@ kind: Service
 metadata:
   name: {{ .Release.Name }}-{{ .Chart.Name }}-media
   labels:
-    app: media
+    app: mastodon
+    component: media
     chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
     release: {{ .Release.Name }}
 spec:
